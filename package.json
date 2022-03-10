@@ -26,6 +26,8 @@
     "subscribers",
     "notify",
     "notification",
+    "broadcast",
+    "broadcasting",
     "enhancer",
     "store",
     "state",
