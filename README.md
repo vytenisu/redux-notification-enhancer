@@ -1,0 +1,3 @@
+# Redux Notification Enhancer
+
+Documentation is being prepared...

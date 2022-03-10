@@ -1,0 +1,17 @@
+node_modules
+lib
+test
+scripts
+.git
+.gitignore
+index.ts
+tsconfig.json
+tslint.json
+webpack.config.js
+webpack.config.dev.js
+dist/coverage
+.vscode
+cache
+.npmignore
+.prettierrc
+jest.config.js
