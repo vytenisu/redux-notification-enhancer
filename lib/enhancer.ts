@@ -1,9 +1,8 @@
 import type {StoreCreator, StoreEnhancer} from 'redux'
 
 export interface CreateNotificationEnhancerArgs {
-  onRender?: (renderPromise: Promise<void>) => void
   throttle?: boolean
-  triggerAnimationFrame?: boolean
+  requestAnimationFrame?: boolean
   prefixes?: {
     passive?: string
     immediate?: string
@@ -14,16 +13,16 @@ export interface CreateNotificationEnhancerResponse {
   enhancer: StoreEnhancer
   passive: (type: string) => string
   immediate: (type: string) => string
+  getNotificationPromise: () => Promise<void>
 }
 
 export const createNotificationEnhancer = ({
-  onRender = () => {
-    // No operation
-  },
   throttle = false,
-  triggerAnimationFrame = true,
+  requestAnimationFrame = true,
   prefixes: providedPrefixes = {},
-}: CreateNotificationEnhancerArgs): CreateNotificationEnhancerResponse => {
+}: CreateNotificationEnhancerArgs = {}): CreateNotificationEnhancerResponse => {
+  let notificationPromise = Promise.resolve()
+
   const prefixes = {
     ...{
       passive: 'S%',
@@ -35,7 +34,7 @@ export const createNotificationEnhancer = ({
   return {
     enhancer: (createStore: StoreCreator) => (reducer, state) => {
       const broadcastState = {
-        pending: true,
+        pending: false,
         immediate: false,
         inProgress: false,
       }
@@ -88,7 +87,7 @@ export const createNotificationEnhancer = ({
           })
         })
 
-        onRender(promise)
+        notificationPromise = promise
         return promise
       }
 
@@ -108,12 +107,10 @@ export const createNotificationEnhancer = ({
               broadcastState.inProgress = false
             }
           } else {
-            onRender(
-              new Promise(async resolve => {
-                await notify()
-                resolve()
-              }),
-            )
+            notificationPromise = new Promise(async resolve => {
+              await notify()
+              resolve()
+            })
           }
         }
       })
@@ -132,5 +129,6 @@ export const createNotificationEnhancer = ({
     },
     passive: (type: string) => `${prefixes.passive}${type}`,
     immediate: (type: string) => `${prefixes.immediate}${type}`,
+    getNotificationPromise: () => notificationPromise,
   }
 }
