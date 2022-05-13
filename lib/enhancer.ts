@@ -2,7 +2,7 @@ import type {StoreCreator, StoreEnhancer} from 'redux'
 
 export interface CreateNotificationEnhancerArgs {
   throttle?: boolean
-  requestAnimationFrame?: boolean
+  requestAnimation?: boolean
   prefixes?: {
     passive?: string
     immediate?: string
@@ -18,7 +18,7 @@ export interface CreateNotificationEnhancerResponse {
 
 export const createNotificationEnhancer = ({
   throttle = false,
-  requestAnimationFrame = true,
+  requestAnimation = true,
   prefixes: providedPrefixes = {},
 }: CreateNotificationEnhancerArgs = {}): CreateNotificationEnhancerResponse => {
   let notificationPromise = Promise.resolve()
@@ -72,8 +72,8 @@ export const createNotificationEnhancer = ({
           setTimeout(async () => {
             await notify()
 
-            if (triggerAnimationFrame) {
-              requestAnimationFrame(() => {
+            if (requestAnimation) {
+              requestAnimationFrame?.(() => {
                 // No operation
               })
             }

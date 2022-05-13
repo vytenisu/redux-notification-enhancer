@@ -92,7 +92,7 @@ describe('Redux Notification Enhancer', () => {
   })
 
   it('does not trigger animation frame when triggering is disabled', async () => {
-    const {enhancer} = createNotificationEnhancer({throttle: true, requestAnimationFrame: false})
+    const {enhancer} = createNotificationEnhancer({throttle: true, requestAnimation: false})
     const store = createStore(() => null, enhancer)
 
     const subscriber = jest.fn()
