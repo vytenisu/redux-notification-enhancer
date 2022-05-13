@@ -93,6 +93,8 @@ store.dispatch({type: immediate('THROTTLE_BYPASS')})
 | immediate              | Function for modifying action type and marking that action as "immeditate" - to be executed at once even if throttling is enabled. There is no need to use this marker if throttling is disabled. |
 | getNotificationPromise | Returns promise of current notifications. This promise is resolve once all currently notified subscribers complete their work. There is no need to use this promise if throttling is disabled.    |
 
+---
+
 **Example use case for _getNotificationPromise_:**
 
 If _React_ is used together with _Redux_ and _**RNE**_ with throttling enabled, _React_ renders may happen slightly later than expected. To ensure that last render completed, _getNotificationPromise_ can be used:

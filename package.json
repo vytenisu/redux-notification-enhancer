@@ -1,6 +1,6 @@
 {
   "name": "redux-notification-enhancer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Enhancer for Redux allowing to control and throttle notifications to subscribers",
   "main": "dist/index.js",
   "scripts": {
