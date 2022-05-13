@@ -2,7 +2,7 @@
 
 _by Vytenis Urbonavičius_
 
-_Redux Notification Enhancer (**RNE**)_ drastically improves performance of some _Redux_-based applications by providing control over when dispatched actions are causing subscriber notifications
+_Redux Notification Enhancer (**RNE**)_ drastically improves performance of some _Redux_-based applications by providing control over subscriber notifications after state updates.
 
 **Main features:**
 
