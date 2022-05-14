@@ -6,14 +6,22 @@ _Redux Notification Enhancer (**RNE**)_ drastically improves performance of some
 
 **Main features:**
 
-- **Notification throttling** - if enabled, it makes sure that subscribers are allowed to finish handling state changes before a new notification is triggered. By default _Redux_ is notifying all subscribers on every state change.
-- **Manual notification control** - when used, it allows to mark certain actions as _passive_ - they would update state but avoid notifying subscribers.
+- **Notification throttling** - if enabled, it makes sure that subscribers are allowed to finish handling state changes before a new notification is triggered. By default _Redux_ is notifying all subscribers on every state change. Most of the time it does not require a significant effort to introduce throttling with **_RNE_** into an existent project.
+- **Manual notification control** - when used, it allows to mark certain actions as _passive_ - they would update state but avoid notifying subscribers. When introducing manual notification control into existent project, it can be done gradually.
+
+---
 
 Above optimizations become even more impactful when used together with **_@reduxjs/toolkit_**. Its thunk operations always trigger multiple dispatches whenever actions are pending, fulfilled or rejected. If _**RNE**_ is not used, these auto-generated actions are causing notifications even if they are not necessary (i.e. thunk action is only dispatching other actions).
 
 ---
 
-**Example use case:**
+**WARNING:**
+
+_**RNE**_ by design brakes default lifecycle of _Redux_ and increases complexity of code. Only use in projects where performance is critical and cannot be achieved by other optimization techniques. Please see "Common mistakes" section for more details.
+
+---
+
+## Example use case
 
 When using _Redux_ with _**React**_, _React_ performs render on every _Redux_ notification for every single state change. If a very complex system is developed and render becomes heavy despite being well written, optimized using memoization and other techniques - it becomes important to reduce amount of renders to achieve much higher browser frame rate.
 
@@ -24,20 +32,14 @@ This can be achieved by:
 
 ---
 
-**WARNING:**
-
-_**RNE**_ by design brakes default lifecycle of _Redux_ and increases complexity of code. Only use in projects where performance is critical and cannot be achieved by other optimization techniques. Please see "Common mistakes" section for more details.
-
----
-
 ## Integration
 
 Simplest way to include _**RNE**_ into _Redux_ is by passing it as a second argument to _createStore_.
 
 ```javascript
 const {createNotificationEnhancer} = require('redux-notification-enhancer')
-
-const {enhancer} = createNotificationEnhancer(options) // See "Options" section for details
+// See "Options" to see what "options" argument may contain
+const {enhancer} = createNotificationEnhancer(options)
 const store = createStore(reducers, enhancer)
 ```
 
@@ -56,7 +58,7 @@ const {enhancer} = createNotificationEnhancer(options)
 
 const store = configureStore({
   reducer,
-  //...
+  // ...
   enhancers: [enhancer],
 })
 ```
@@ -76,6 +78,7 @@ If no marker is used - action is either throttled (if throttling is enabled) or 
 ```javascript
 const {enhancer, passive, immediate} = createNotificationEnhancer(options)
 
+// Alternatively use configureStore if used with @reduxjs/toolkit
 const store = createStore(reducers, enhancer)
 
 // Throttled if throttling is enabled
