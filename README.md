@@ -9,6 +9,8 @@ _Redux Notification Enhancer (**RNE**)_ drastically improves performance of some
 - **Notification throttling** - if enabled, it makes sure that subscribers are allowed to finish handling state changes before a new notification is triggered. By default _Redux_ is notifying all subscribers on every state change.
 - **Manual notification control** - when used, it allows to mark certain actions as _passive_ - they would update state but avoid notifying subscribers.
 
+Above optimizations become even more impactful when used together with **_@reduxjs/toolkit_**. Its thunk operations always trigger multiple dispatches whenever actions are pending, fulfilled or rejected. If _**RNE**_ is not used, these auto-generated actions are causing notifications even if they are not necessary (i.e. thunk action is only dispatching other actions).
+
 ---
 
 **Example use case:**
@@ -33,7 +35,9 @@ _**RNE**_ by design brakes default lifecycle of _Redux_ and increases complexity
 Simplest way to include _**RNE**_ into _Redux_ is by passing it as a second argument to _createStore_.
 
 ```javascript
-const {enhancer} = createNotificationEnhancer(options)
+const {createNotificationEnhancer} = require('redux-notification-enhancer')
+
+const {enhancer} = createNotificationEnhancer(options) // See "Options" section for details
 const store = createStore(reducers, enhancer)
 ```
 
@@ -43,6 +47,18 @@ If you need other enhancers such as _applyMiddleware_, you can provide them usin
 const {enhancer} = createNotificationEnhancer(options)
 const multipleEnhancers = compose(applyMiddleware(thunk), enhancer)
 const store = createStore(reducers, enhancers)
+```
+
+Note that these days it is often advised to use _@reduxjs/toolkit_ instead of pure _Redux_. In case of _@reduxjs/toolkit_, integration is performed using `configureStore`:
+
+```javascript
+const {enhancer} = createNotificationEnhancer(options)
+
+const store = configureStore({
+  reducer,
+  //...
+  enhancers: [enhancer],
+})
 ```
 
 ---
@@ -76,6 +92,8 @@ store.dispatch({type: immediate('THROTTLE_BYPASS')})
 
 ## Options
 
+Options can be provided as an optional object argument for `createNotificationEnhancer`. Object keys and values are explained in the table below:
+
 | Option           | Default                          | Meaning                                                                                                                               |
 | ---------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | throttle         | false                            | Makes sure that promises of subscribers are resolved before notifying them again.                                                     |
@@ -91,13 +109,13 @@ store.dispatch({type: immediate('THROTTLE_BYPASS')})
 | enhancer               | Enhancer itself to be passed to createStore of _Redux_                                                                                                                                            |
 | passive                | Function for modifying action type and marking that action as "passive" - only impacting state but not notifying subscribers.                                                                     |
 | immediate              | Function for modifying action type and marking that action as "immeditate" - to be executed at once even if throttling is enabled. There is no need to use this marker if throttling is disabled. |
-| getNotificationPromise | Returns promise of current notifications. This promise is resolve once all currently notified subscribers complete their work. There is no need to use this promise if throttling is disabled.    |
+| getNotificationPromise | Returns promise of current notifications. This promise is resolved once all currently notified subscribers complete their work. There is no need to use this promise if throttling is disabled.   |
 
 ---
 
 **Example use case for _getNotificationPromise_:**
 
-If _React_ is used together with _Redux_ and _**RNE**_ with throttling enabled, _React_ renders may happen slightly later than expected. To ensure that last render completed, _getNotificationPromise_ can be used:
+If _React_ is used together with _Redux_ and _**RNE**_ with throttling enabled, _React_ renders may happen slightly later than expected. To ensure that last render has completed before further operations, _getNotificationPromise_ can be used:
 
 ```javascript
 // Perform some code which causes render here
@@ -149,3 +167,7 @@ I am using _React_ and my code depends on DOM which should change after dispatch
 **Solution:**
 
 Request last render promise using `getNotificationPromise` and wait for it to resolve before performing operations on DOM.
+
+---
+
+Happy Hacking!!!
