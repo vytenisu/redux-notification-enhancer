@@ -17,7 +17,7 @@ Above optimizations become even more impactful when used together with **_@redux
 
 **WARNING:**
 
-_**RNE**_ by design brakes default lifecycle of _Redux_ and increases complexity of code. Only use in projects where performance is critical and cannot be achieved by other optimization techniques. Please see "Troubleshooting" section for more details.
+_**RNE**_ by design breaks default lifecycle of _Redux_ and increases complexity of code. Only use in projects where performance is critical and cannot be achieved by other optimization techniques. Please see "Troubleshooting" section for more details.
 
 ---
 
